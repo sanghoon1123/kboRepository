@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>야구 선수 검색</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        input { padding: 10px; margin-right: 10px; }
+        button { padding: 10px; cursor: pointer; }
+        .result { margin-top: 20px; padding: 10px; border: 1px solid #ddd; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<h1>야구 선수 검색</h1>
+<input type="text" id="playerName" placeholder="선수 이름 입력">
+<button onclick="searchPlayer()">검색</button>
+
+<div id="playerInfo" class="result"></div>
+
+<script>
+    function searchPlayer() {
+    const name = document.getElementById("playerName").value;
+    if (!name) {
+        alert("선수 이름을 입력하세요.");
+        return;
+    }
+
+    fetch(`http://localhost:8080/kbo/find/PlayerName?name=${encodeURIComponent(name)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("선수를 찾을 수 없습니다.");
+            }
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById("playerInfo").innerHTML = `
+                <h3>${data.name} (${data.teamName})</h3>
+                <p>나이: ${data.age}세</p>
+                <p>경기 수: ${data.game}</p>
+                <p>선수 유형: ${data.playerType}</p>  <!-- ✅ 추가된 부분 -->
+                <p>포지션: ${data.playerType === "BATTER" ? data.batterPosition : data.pitcherPosition}</p>
+                ${
+                    data.playerType === "BATTER"
+                        ? `<p>타율: ${data.average}</p>
+                           <p>안타: ${data.hit}</p>
+                           <p>홈런: ${data.homeRun}</p>
+                           <p>타점: ${data.rbi}</p>
+                           <p>OPS: ${data.ops}</p>
+                           <p>도루: ${data.steal}</p>`
+                        : `<p>승리: ${data.win}</p>
+                           <p>패배: ${data.lose}</p>
+                           <p>이닝: ${data.ip}</p>
+                           <p>ERA: ${data.era}</p>
+                           <p>탈삼진: ${data.strikeouts}</p>
+                           <p>홀드: ${data.hold}</p>
+                           <p>세이브: ${data.save}</p>`
+                }
+            `;
+        })
+        .catch(error => {
+            document.getElementById("playerInfo").innerHTML = `<p style="color: red;">${error.message}</p>`;
+        });
+}
+</script>
+
+</body>
+</html>
