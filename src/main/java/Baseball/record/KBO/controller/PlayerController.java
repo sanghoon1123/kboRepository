@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/kbo")
@@ -48,6 +49,8 @@ public class PlayerController {
 
         return ResponseEntity.ok("Player 저장 완료");
     }
+
+
 
     @GetMapping("/players")
     public List<PlayerDto2> getPlayers() {

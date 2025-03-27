@@ -24,7 +24,7 @@ public class Pitcher extends Player{
     public Pitcher(String name, int age, int game,Team team,
                    int win, int lose, double ip, double era, int strikeouts, int hold,
                    int save, PitcherPosition pitcherPosition) {
-        super(name, age, game, team);
+        super(name, age, game   , team);
         this.win = win;
         this.lose = lose;
         this.ip = ip;
