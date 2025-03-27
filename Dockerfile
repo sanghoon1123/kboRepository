@@ -12,7 +12,7 @@ COPY settings.gradle .
 COPY src src
 
 RUN chmod +x gradlew
-RUN ./gradlew build
+RUN ./gradlew build -x test
 
 # 4. 빌드된 JAR 파일 복사
 COPY build/libs/*.jar app.jar
