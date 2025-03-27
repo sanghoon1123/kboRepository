@@ -11,6 +11,8 @@ import Baseball.record.KBO.dto.PlayerDto;
 import Baseball.record.KBO.dto.PlayerDto2;
 import Baseball.record.KBO.service.PlayerService;
 import Baseball.record.KBO.service.TeamService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,6 +29,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/kbo")
+@Tag(name = "Player API", description = "선수 정보 관련 API")
 public class PlayerController {
     private final PlayerService playerService;
     private final TeamService teamService;
@@ -50,8 +53,7 @@ public class PlayerController {
         return ResponseEntity.ok("Player 저장 완료");
     }
 
-
-
+    @Operation(summary = "선수 목록 조회", description = "모든 선수의 정보를 가져옵니다.")
     @GetMapping("/players")
     public List<PlayerDto2> getPlayers() {
         return playerService.findAll();
@@ -63,7 +65,7 @@ public class PlayerController {
         return playerService.findTeamNameWithPlayer(TeamName.valueOf(teamName));
     }
 
-
+    @Operation(summary = "선수 전체 조회", description = "선수 이름을 입력하면 해당 선수의 기록을 조회할 수 있습니다.")
     @GetMapping("/find/PlayerName")
     public ResponseEntity<?> getPlayerByName(@RequestParam String name) {
         try {
@@ -81,6 +83,7 @@ public class PlayerController {
         return ResponseEntity.ok(player);
     }
 
+    @Operation(summary = "선수 조건 조회", description = "팀 이름, 플레이어 타입, 페이징 조건으로 선수를 조회할 수 있습니다.")
     @GetMapping("/details/players")
     public ResponseEntity<Page<? extends PlayerDto>> getAllPlayerWithDetails(
             @RequestParam(required = false) TeamName teamName,
