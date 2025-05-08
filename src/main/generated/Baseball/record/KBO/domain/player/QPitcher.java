@@ -25,7 +25,7 @@ public class QPitcher extends EntityPathBase<Pitcher> {
     public final QPlayer _super;
 
     //inherited
-    public final NumberPath<Integer> age;
+    public final DatePath<java.time.LocalDate> birthDate;
 
     public final NumberPath<Double> era = createNumber("era", Double.class);
 
@@ -44,10 +44,10 @@ public class QPitcher extends EntityPathBase<Pitcher> {
     //inherited
     public final StringPath name;
 
-    public final EnumPath<PitcherPosition> pitcherPosition = createEnum("pitcherPosition", PitcherPosition.class);
-
     //inherited
     public final StringPath playerType;
+
+    public final EnumPath<PitcherPosition> position = createEnum("position", PitcherPosition.class);
 
     public final NumberPath<Integer> save = createNumber("save", Integer.class);
 
@@ -77,7 +77,7 @@ public class QPitcher extends EntityPathBase<Pitcher> {
     public QPitcher(Class<? extends Pitcher> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this._super = new QPlayer(type, metadata, inits);
-        this.age = _super.age;
+        this.birthDate = _super.birthDate;
         this.game = _super.game;
         this.id = _super.id;
         this.name = _super.name;

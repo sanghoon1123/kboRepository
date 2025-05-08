@@ -22,7 +22,7 @@ public class QPlayer extends EntityPathBase<Player> {
 
     public static final QPlayer player = new QPlayer("player");
 
-    public final NumberPath<Integer> age = createNumber("age", Integer.class);
+    public final DatePath<java.time.LocalDate> birthDate = createDate("birthDate", java.time.LocalDate.class);
 
     public final NumberPath<Integer> game = createNumber("game", Integer.class);
 

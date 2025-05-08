@@ -24,12 +24,12 @@ public class QBatter extends EntityPathBase<Batter> {
 
     public final QPlayer _super;
 
-    //inherited
-    public final NumberPath<Integer> age;
-
     public final NumberPath<Double> average = createNumber("average", Double.class);
 
     public final EnumPath<BatterPosition> batterPosition = createEnum("batterPosition", BatterPosition.class);
+
+    //inherited
+    public final DatePath<java.time.LocalDate> birthDate;
 
     //inherited
     public final NumberPath<Integer> game;
@@ -50,8 +50,6 @@ public class QBatter extends EntityPathBase<Batter> {
     public final StringPath playerType;
 
     public final NumberPath<Integer> rbi = createNumber("rbi", Integer.class);
-
-    public final NumberPath<Integer> steal = createNumber("steal", Integer.class);
 
     // inherited
     public final Baseball.record.KBO.domain.team.QTeam team;
@@ -75,7 +73,7 @@ public class QBatter extends EntityPathBase<Batter> {
     public QBatter(Class<? extends Batter> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this._super = new QPlayer(type, metadata, inits);
-        this.age = _super.age;
+        this.birthDate = _super.birthDate;
         this.game = _super.game;
         this.id = _super.id;
         this.name = _super.name;

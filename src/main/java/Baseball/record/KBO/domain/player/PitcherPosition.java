@@ -1,5 +1,7 @@
 package Baseball.record.KBO.domain.player;
 
-public enum PitcherPosition {
-    STARTING, MIDDLE, FINISHING
+import lombok.Setter;
+
+    public enum PitcherPosition {
+    SP, RP, CP
 }

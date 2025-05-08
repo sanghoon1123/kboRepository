@@ -45,7 +45,7 @@ public class PlayerRepositoryImpl implements PlayerRepositoryCustom{
                 .select(Projections.constructor(
                         BatterDto.class,
                         player.name,
-                        player.age,
+                        player.birthDate,
                         player.game,
                         team.name,
                         player.playerType.stringValue(),
@@ -54,7 +54,6 @@ public class PlayerRepositoryImpl implements PlayerRepositoryCustom{
                         batter.homeRun,
                         batter.rbi,
                         batter.ops,
-                        batter.steal,
                         batter.batterPosition
                 ))
                 .from(batter)
@@ -71,7 +70,7 @@ public class PlayerRepositoryImpl implements PlayerRepositoryCustom{
                 .select(Projections.constructor(
                         PitcherDto.class,
                         player.name,
-                        player.age,
+                        player.birthDate,
                         player.game,
                         team.name,
                         player.playerType.stringValue(),
@@ -82,7 +81,7 @@ public class PlayerRepositoryImpl implements PlayerRepositoryCustom{
                         pitcher.strikeouts,
                         pitcher.hold,
                         pitcher.save,
-                        pitcher.pitcherPosition
+                        pitcher.position
                 ))
                 .from(pitcher)
                 .join(player).on(player.id.eq(pitcher.id))
@@ -109,9 +108,9 @@ public class PlayerRepositoryImpl implements PlayerRepositoryCustom{
         }
 
         List<Tuple> tuples = queryFactory
-                .select(player.name, player.age, player.game, player.playerType, team.name,
-                        batter.average, batter.hit, batter.homeRun, batter.rbi, batter.ops, batter.steal, batter.batterPosition,
-                        pitcher.win, pitcher.lose, pitcher.ip, pitcher.era, pitcher.strikeouts, pitcher.hold, pitcher.save, pitcher.pitcherPosition)
+                .select(player.name, player.birthDate, player.game, player.playerType, team.name,
+                        batter.average, batter.hit, batter.homeRun, batter.rbi, batter.ops, batter.batterPosition,
+                        pitcher.win, pitcher.lose, pitcher.ip, pitcher.era, pitcher.strikeouts, pitcher.hold, pitcher.save, pitcher.position)
                 .from(player)
                 .leftJoin(player.team, team)
                 .leftJoin(batter).on(player.id.eq(batter.id))
@@ -129,7 +128,7 @@ public class PlayerRepositoryImpl implements PlayerRepositoryCustom{
             if ("BATTER".equals(playerTypeValue)) {
                 results.add(new BatterDto(
                         tuple.get(player.name),
-                        tuple.get(player.age),
+                        tuple.get(player.birthDate),
                         tuple.get(player.game),
                         tuple.get(team.name),
                         playerTypeValue,
@@ -138,13 +137,12 @@ public class PlayerRepositoryImpl implements PlayerRepositoryCustom{
                         tuple.get(batter.homeRun),
                         tuple.get(batter.rbi),
                         tuple.get(batter.ops),
-                        tuple.get(batter.steal),
                         tuple.get(batter.batterPosition)
                 ));
             } else if ("PITCHER".equals(playerTypeValue)) {
                 results.add(new PitcherDto(
                         tuple.get(player.name),
-                        tuple.get(player.age),
+                        tuple.get(player.birthDate),
                         tuple.get(player.game),
                         tuple.get(team.name),
                         playerTypeValue,
@@ -155,12 +153,12 @@ public class PlayerRepositoryImpl implements PlayerRepositoryCustom{
                         tuple.get(pitcher.strikeouts),
                         tuple.get(pitcher.hold),
                         tuple.get(pitcher.save),
-                        tuple.get(pitcher.pitcherPosition)
+                        tuple.get(pitcher.position)
                 ));
             } else {
                 results.add(new DefaultPlayerDto(
                         tuple.get(player.name),
-                        tuple.get(player.age),
+                        tuple.get(player.birthDate),
                         tuple.get(player.game),
                         tuple.get(team.name),
                         playerTypeValue
@@ -177,5 +175,11 @@ public class PlayerRepositoryImpl implements PlayerRepositoryCustom{
         return new PageImpl<>(results, pageable, total);
     }
 }
+
+
+
+
+
+
 
 

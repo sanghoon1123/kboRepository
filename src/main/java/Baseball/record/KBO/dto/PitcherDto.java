@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
+import java.time.LocalDate;
+
 @Getter
 public class PitcherDto extends PlayerDto{
     private final int win;
@@ -18,14 +20,13 @@ public class PitcherDto extends PlayerDto{
     private final int strikeouts;
     private final int hold;
     private final int save;
-    private final PitcherPosition pitcherPosition;
+    private final PitcherPosition position;
 
     @QueryProjection
-    public PitcherDto(String name, int age, int game, TeamName teamName,
+    public PitcherDto(String name, LocalDate birthDate, int game, TeamName teamName,
                       String playerType, int win, int lose, double ip,
-                      double era, int strikeouts, int hold, int save,
-                      PitcherPosition pitcherPosition) {
-        super(name, age, game, teamName, playerType);
+                      double era, int strikeouts, int hold, int save, PitcherPosition position) {
+        super(name, birthDate, game, teamName, playerType);
         this.win = win;
         this.lose = lose;
         this.ip = ip;
@@ -33,13 +34,13 @@ public class PitcherDto extends PlayerDto{
         this.strikeouts = strikeouts;
         this.hold = hold;
         this.save = save;
-        this.pitcherPosition = pitcherPosition;
+        this.position = position;
     }
 
     public Pitcher toEntity(Team team){
-        return new Pitcher(this.getName(), this.getAge(), this.getGame(), team,
+        return new Pitcher(this.getName(), this.getBirthDate(), this.getGame(), team,
                 this.win, this.lose, this.ip, this.era, this.strikeouts, this.hold, this.save,
-                this.pitcherPosition);
+                this.position);
     }
 
     @JsonCreator
@@ -51,9 +52,9 @@ public class PitcherDto extends PlayerDto{
             @JsonProperty("strikeouts") int strikeouts,
             @JsonProperty("hold") int hold,
             @JsonProperty("save") int save,
-            @JsonProperty("pitcherPosition") PitcherPosition pitcherPosition
+            @JsonProperty("position") PitcherPosition position
     ) {
-        super(null, 0, 0, null, null);
+        super(null, null, 0, null, null);
         this.win = win;
         this.lose = lose;
         this.ip = ip;
@@ -61,6 +62,6 @@ public class PitcherDto extends PlayerDto{
         this.strikeouts = strikeouts;
         this.hold = hold;
         this.save = save;
-        this.pitcherPosition = pitcherPosition;
+        this.position = position;
     }
 }
