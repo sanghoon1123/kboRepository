@@ -1,14 +1,10 @@
 package Baseball.record.KBO.controller;
 
-import Baseball.record.KBO.domain.player.Batter;
-import Baseball.record.KBO.domain.player.Pitcher;
+import Baseball.record.KBO.domain.player.PitcherPosition;
 import Baseball.record.KBO.domain.player.Player;
 import Baseball.record.KBO.domain.team.Team;
 import Baseball.record.KBO.domain.team.TeamName;
-import Baseball.record.KBO.dto.BatterDto;
-import Baseball.record.KBO.dto.PitcherDto;
-import Baseball.record.KBO.dto.PlayerDto;
-import Baseball.record.KBO.dto.PlayerDto2;
+import Baseball.record.KBO.dto.*;
 import Baseball.record.KBO.service.PlayerService;
 import Baseball.record.KBO.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -96,6 +93,7 @@ public class PlayerController {
         return ResponseEntity.ok(players);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{playerId}")
     public ResponseEntity<?> updatePlayer(@PathVariable Long playerId,
                                           @RequestBody PlayerDto playerDto){
@@ -103,9 +101,30 @@ public class PlayerController {
         return ResponseEntity.ok("player 업데이트 완료");
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{playerId}")
     public ResponseEntity<?> deletePlayer(@PathVariable Long playerId){
         playerService.deletePlayer(playerId);
         return ResponseEntity.ok("player 삭제 완료");
+    }
+
+    @GetMapping("/top/ops")
+    public Map<String, Object> getTopOPS(@RequestParam String playerName){
+        return playerService.opsTop5(playerName);
+    }
+
+    @GetMapping("/details")
+    public ResponseEntity<?> getPlayers(
+            @RequestParam String playerType,
+            @RequestParam(required = false) String teamName,
+            @RequestParam(required = false) String position
+    ) {
+        if (playerType.equalsIgnoreCase("batter")) {
+            return ResponseEntity.ok(playerService.getBatters(teamName, position));
+        } else if (playerType.equalsIgnoreCase("pitcher")) {
+            return ResponseEntity.ok(playerService.getPitchers(teamName, position));
+        } else {
+            return ResponseEntity.badRequest().body("playerType은 batter 또는 pitcher여야 합니다.");
+        }
     }
 }

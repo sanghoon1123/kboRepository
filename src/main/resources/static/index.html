@@ -1,69 +1,266 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>야구 선수 검색</title>
+    <meta charset="UTF-8" />
+    <title>KBO 선수 검색</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-        input { padding: 10px; margin-right: 10px; }
-        button { padding: 10px; cursor: pointer; }
-        .result { margin-top: 20px; padding: 10px; border: 1px solid #ddd; display: inline-block; }
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        label { margin-right: 10px; }
+        select, button { margin: 5px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th {
+          background-color: #f2f2f2;
+          cursor: pointer;
+          position: relative;
+          user-select: none;
+        }
+        th .sort-arrow {
+          font-size: 12px;
+          color: #bbb;
+          margin-left: 4px;
+          transition: color 0.2s;
+        }
+        th:hover .sort-arrow {
+          color: #555;
+        }
+        th.sorted-asc .arrow-up,
+        th.sorted-desc .arrow-down {
+          color: #000;
+        }
+        th[title] {
+          position: relative;
+        }
     </style>
 </head>
 <body>
 
-<h1>야구 선수 검색</h1>
-<input type="text" id="playerName" placeholder="선수 이름 입력">
-<button onclick="searchPlayer()">검색</button>
+<h2>KBO 선수 검색</h2>
 
-<div id="playerInfo" class="result"></div>
+<label for="team">팀 선택:</label>
+<select id="team">
+    <option value="ALL">전체</option>
+    <option value="SSG">SSG</option>
+    <option value="LG">LG</option>
+    <option value="KT">KT</option>
+    <option value="NC">NC</option>
+    <option value="KIA">KIA</option>
+    <option value="키움">키움</option>
+    <option value="롯데">롯데</option>
+    <option value="두산">두산</option>
+    <option value="한화">한화</option>
+    <option value="삼성">삼성</option>
+</select>
+
+<label for="playerType">포지션:</label>
+<select id="playerType" onchange="updateDetailPosition()">
+    <option value="ALL">전체</option>
+    <option value="batter">타자</option>
+    <option value="pitcher">투수</option>
+</select>
+
+<label for="detailPosition">세부 포지션:</label>
+<select id="detailPosition" style="display:none">
+    <option value="ALL">전체</option>
+</select>
+
+<button onclick="searchPlayers()">검색</button>
+
+<table id="resultTable" style="display:none">
+    <thead>
+    <tr id="tableHeader"></tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+</table>
 
 <script>
-    function searchPlayer() {
-    const name = document.getElementById("playerName").value;
-    if (!name) {
-        alert("선수 이름을 입력하세요.");
-        return;
+    const batterPositions = [
+      { label: "포수", value: "C" },
+      { label: "1루수", value: "FIRST" },
+      { label: "2루수", value: "SECOND" },
+      { label: "유격수", value: "SS" },
+      { label: "3루수", value: "THIRD" },
+      { label: "좌익수", value: "LEFT" },
+      { label: "중견수", value: "CENTER" },
+      { label: "우익수", value: "RIGHT" },
+      { label: "지명타자", value: "DH" }
+    ];
+
+    const pitcherPositions = [
+      { label: "선발", value: "SP" },
+      { label: "중간", value: "RP" },
+      { label: "마무리", value: "CP" }
+    ];
+
+    function updateDetailPosition() {
+      const type = document.getElementById("playerType").value;
+      const detailSelect = document.getElementById("detailPosition");
+      detailSelect.innerHTML = '<option value="ALL">전체</option>';
+
+      if (type === "batter") {
+        batterPositions.forEach(pos => {
+          const option = document.createElement("option");
+          option.value = pos.value;
+          option.innerText = pos.label;
+          detailSelect.appendChild(option);
+        });
+        detailSelect.style.display = "inline-block";
+      } else if (type === "pitcher") {
+        pitcherPositions.forEach(pos => {
+          const option = document.createElement("option");
+          option.value = pos.value;
+          option.innerText = pos.label;
+          detailSelect.appendChild(option);
+        });
+        detailSelect.style.display = "inline-block";
+      } else {
+        detailSelect.style.display = "none";
+      }
     }
 
-    fetch("http://13.124.245.219:8080/kbo/find/PlayerName?name=" + encodeURIComponent(name))
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("선수를 찾을 수 없습니다.");
-            }
-            return response.json();
-        })
-        .then(data => {
-            document.getElementById("playerInfo").innerHTML = `
-                <h3>${data.name} (${data.teamName})</h3>
-                <p>나이: ${data.age}세</p>
-                <p>경기 수: ${data.game}</p>
-                <p>선수 유형: ${data.playerType}</p>  <!-- ✅ 추가된 부분 -->
-                <p>포지션: ${data.playerType === "BATTER" ? data.batterPosition : data.pitcherPosition}</p>
-                ${
-                    data.playerType === "BATTER"
-                        ? `<p>타율: ${data.average}</p>
-                           <p>안타: ${data.hit}</p>
-                           <p>홈런: ${data.homeRun}</p>
-                           <p>타점: ${data.rbi}</p>
-                           <p>OPS: ${data.ops}</p>
-                           <p>도루: ${data.steal}</p>`
-                        : `<p>승리: ${data.win}</p>
-                           <p>패배: ${data.lose}</p>
-                           <p>이닝: ${data.ip}</p>
-                           <p>ERA: ${data.era}</p>
-                           <p>탈삼진: ${data.strikeouts}</p>
-                           <p>홀드: ${data.hold}</p>
-                           <p>세이브: ${data.save}</p>`
-                }
-            `;
-        })
-        .catch(error => {
-            document.getElementById("playerInfo").innerHTML = `<p style="color: red;">${error.message}</p>`;
-        });
-}
-</script>
+    let currentSort = { column: null, order: 'asc' };
 
+    function sortTableByColumn(index, tableId = "resultTable") {
+      const table = document.getElementById(tableId);
+      const tbody = table.querySelector("tbody");
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+
+      const ths = table.querySelectorAll("th");
+      ths.forEach((th, i) => {
+        th.classList.remove("sorted-asc", "sorted-desc");
+        if (i === index) th.classList.add(currentSort.order === "asc" ? "sorted-asc" : "sorted-desc");
+      });
+
+      rows.sort((a, b) => {
+        const aText = a.children[index].innerText;
+        const bText = b.children[index].innerText;
+
+        const teamOrder = ["SSG", "LG", "KT", "NC", "KIA", "키움", "롯데", "두산", "한화", "삼성"];
+        if (aText === bText) return 0;
+
+        if (index === 3) {
+          return currentSort.order === "asc"
+            ? teamOrder.indexOf(aText) - teamOrder.indexOf(bText)
+            : teamOrder.indexOf(bText) - teamOrder.indexOf(aText);
+        }
+
+        const aNum = parseFloat(aText.replace(/[^0-9.-]/g, ""));
+        const bNum = parseFloat(bText.replace(/[^0-9.-]/g, ""));
+        const isNumeric = !isNaN(aNum) && !isNaN(bNum);
+
+        if (isNumeric) {
+          return currentSort.order === "asc" ? aNum - bNum : bNum - aNum;
+        } else {
+          return currentSort.order === "asc"
+            ? aText.localeCompare(bText)
+            : bText.localeCompare(aText);
+        }
+      });
+
+      tbody.innerHTML = "";
+      rows.forEach(row => tbody.appendChild(row));
+      currentSort.order = currentSort.order === "asc" ? "desc" : "asc";
+    }
+
+    async function searchPlayers() {
+      const team = document.getElementById("team").value;
+      const playerType = document.getElementById("playerType").value;
+      const detailPosition = document.getElementById("detailPosition").value;
+      const headerRow = document.getElementById("tableHeader");
+      const body = document.getElementById("tableBody");
+      const table = document.getElementById("resultTable");
+
+      headerRow.innerHTML = '';
+      body.innerHTML = '';
+      table.style.display = 'table';
+
+      let players = [];
+
+      try {
+        if (playerType === "ALL") {
+          const [battersRes, pitchersRes] = await Promise.all([
+            fetch(`http://localhost:8080/kbo/details?playerType=batter${team !== "ALL" ? `&teamName=${team}` : ""}`),
+            fetch(`http://localhost:8080/kbo/details?playerType=pitcher${team !== "ALL" ? `&teamName=${team}` : ""}`)
+          ]);
+          const battersData = await battersRes.json();
+          const pitchersData = await pitchersRes.json();
+          players = [...battersData.content, ...pitchersData.content];
+
+          const headers = ["이름", "생년월일", "경기수", "팀명", "포지션"];
+          headers.forEach((text, i) => {
+            const th = document.createElement("th");
+            th.title = "클릭하여 정렬";
+            th.innerHTML = `${text} <span class="sort-arrow arrow-up">▴</span><span class="sort-arrow arrow-down">▾</span>`;
+            th.onclick = () => {
+              currentSort.column = i;
+              sortTableByColumn(i);
+            };
+            headerRow.appendChild(th);
+          });
+
+          const teamOrder = ["SSG", "LG", "KT", "NC", "KIA", "키움", "롯데", "두산", "한화", "삼성"];
+          players.sort((a, b) => teamOrder.indexOf(a.teamName) - teamOrder.indexOf(b.teamName));
+
+          players.forEach(p => {
+            const tr = document.createElement("tr");
+            [p.name, p.birthDate, p.game, p.teamName, p.batterPosition || p.position || "N/A"].forEach(val => {
+              const td = document.createElement("td");
+              td.innerText = val;
+              tr.appendChild(td);
+            });
+            body.appendChild(tr);
+          });
+
+        } else {
+          let url = `http://localhost:8080/kbo/details?playerType=${playerType}`;
+          if (team !== "ALL") url += `&teamName=${team}`;
+          if (detailPosition !== "ALL") url += `&position=${detailPosition}`;
+          const response = await fetch(url);
+          const data = await response.json();
+          players = data.content;
+
+          if (players.length === 0) {
+            body.innerHTML = `<tr><td colspan="15">결과가 없습니다.</td></tr>`;
+            return;
+          }
+
+          const headers = playerType === "batter"
+            ? ["이름", "생년월일", "경기수", "팀명", "타율", "안타", "홈런", "타점", "OPS", "포지션"]
+            : ["이름", "생년월일", "경기수", "팀명", "승", "패", "이닝", "ERA", "삼진", "홀드", "세이브", "포지션"];
+
+          headers.forEach((text, i) => {
+            const th = document.createElement("th");
+            th.title = "클릭하여 정렬";
+            th.innerHTML = `${text} <span class="sort-arrow arrow-up">▴</span><span class="sort-arrow arrow-down">▾</span>`;
+            th.onclick = () => {
+              currentSort.column = i;
+              sortTableByColumn(i);
+            };
+            headerRow.appendChild(th);
+          });
+
+          const teamOrder = ["SSG", "LG", "KT", "NC", "KIA", "키움", "롯데", "두산", "한화", "삼성"];
+          if (team === "ALL") players.sort((a, b) => teamOrder.indexOf(a.teamName) - teamOrder.indexOf(b.teamName));
+
+          players.forEach(p => {
+            const tr = document.createElement("tr");
+            const values = playerType === "batter"
+              ? [p.name, p.birthDate, p.game, p.teamName, p.average, p.hit, p.homeRun, p.rbi, p.ops, p.batterPosition]
+              : [p.name, p.birthDate, p.game, p.teamName, p.win, p.lose, p.ip, p.era, p.strikeouts, p.hold, p.save, p.position];
+            values.forEach(val => {
+              const td = document.createElement("td");
+              td.innerText = val;
+              tr.appendChild(td);
+            });
+            body.appendChild(tr);
+          });
+        }
+
+      } catch (err) {
+        console.error("검색 오류:", err);
+        alert("API 호출 실패. 서버 상태를 확인하세요.");
+      }
+    }
+</script>
 </body>
 </html>

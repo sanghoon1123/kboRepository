@@ -4,12 +4,18 @@ import Baseball.record.KBO.domain.team.Team;
 import Baseball.record.KBO.dto.PitcherDto;
 import Baseball.record.KBO.dto.PlayerDto;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
+
+import javax.annotation.Nullable;
+import java.time.LocalDate;
 
 @Entity
 @DiscriminatorValue("PITCHER")
 @Getter
-public class Pitcher extends Player{
+public class Pitcher extends Player {
+
     private int win;
     private int lose;
     private double ip;
@@ -17,14 +23,13 @@ public class Pitcher extends Player{
     private int strikeouts;
     private int hold;
     private int save;
+    @Enumerated(EnumType.STRING) @Nullable
+    private PitcherPosition position;
 
-    @Enumerated(EnumType.STRING)
-    private PitcherPosition pitcherPosition;
-
-    public Pitcher(String name, int age, int game,Team team,
-                   int win, int lose, double ip, double era, int strikeouts, int hold,
-                   int save, PitcherPosition pitcherPosition) {
-        super(name, age, game   , team);
+    public Pitcher(String name, LocalDate birthDate, int game, Team team,
+                   int win, int lose, double ip, double era,
+                   int strikeouts, int hold, int save, PitcherPosition position) {
+        super(name, birthDate, game, team);
         this.win = win;
         this.lose = lose;
         this.ip = ip;
@@ -32,11 +37,10 @@ public class Pitcher extends Player{
         this.strikeouts = strikeouts;
         this.hold = hold;
         this.save = save;
-        this.pitcherPosition = pitcherPosition;
+        this.position = position;
     }
 
-    protected Pitcher() {
-    }
+    protected Pitcher() {}
 
     @Override
     public void updateFields(PlayerDto playerDto, Team team) {
@@ -49,9 +53,11 @@ public class Pitcher extends Player{
             this.strikeouts = pitcherDto.getStrikeouts();
             this.hold = pitcherDto.getHold();
             this.save = pitcherDto.getSave();
-            this.pitcherPosition = pitcherDto.getPitcherPosition();
+            this.position = position;
         } else {
             throw new IllegalArgumentException("잘못된 DTO 타입입니다.");
         }
     }
+
 }
+

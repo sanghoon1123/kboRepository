@@ -1,31 +1,31 @@
 package Baseball.record.KBO.domain.team;
 
+import Baseball.record.KBO.domain.player.Player;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
-@Getter
+@Getter @Setter
 public class Team {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int win;
-    private int lose;
-    private int draw;
+    @OneToMany(mappedBy = "team")
+    @JsonManagedReference
+    private List<Player> players;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, unique = true)
-    private TeamName name;
+    private TeamName name; // "한화"
 
-    public Team(TeamName name) {
-        this.name = name;
-        this.win = name.getWin();
-        this.lose = name.getLose();
-        this.draw = name.getDraw();
-    }
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    private List<TeamRecord> records; // 하루하루 쌓이는 기록들
 
-    protected Team() {
+    public Team() {
     }
 }
