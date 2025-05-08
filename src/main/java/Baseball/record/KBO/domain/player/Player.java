@@ -21,7 +21,7 @@ public abstract class Player {
 
     private String name;
 
-    private LocalDate birthDate; // 변경됨: age → birthDate
+    private LocalDate birthDate;
 
     private int game;
 

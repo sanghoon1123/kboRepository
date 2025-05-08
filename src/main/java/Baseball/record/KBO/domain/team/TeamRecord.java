@@ -13,6 +13,9 @@ public class TeamRecord {
     @Id @GeneratedValue
     private Long id;
 
+    @ManyToOne
+    private Team team;
+
     @Enumerated(EnumType.STRING)
     private TeamName teamName;
 
@@ -24,6 +27,4 @@ public class TeamRecord {
     private int draw;
     private double winningRate;
 
-    @ManyToOne
-    private Team team;
 }
