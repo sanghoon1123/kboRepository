@@ -1,5 +1,7 @@
 package Baseball.record.KBO.dto;
 
+import Baseball.record.KBO.domain.player.Batter;
+import Baseball.record.KBO.domain.player.Pitcher;
 import Baseball.record.KBO.domain.player.Player;
 import Baseball.record.KBO.domain.team.TeamName;
 import lombok.Getter;
@@ -32,6 +34,7 @@ public class PlayerDto2 {
         teamName = player.getTeam().getName();
         playerType = player.getPlayerType();
     }
+
 
     @Override
     public String toString() {

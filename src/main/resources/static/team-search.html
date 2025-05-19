@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>팀 레코드 조회</title>
+  <style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th, td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: center;
+    }
+
+    th {
+        background-color: #f5f5f5;
+    }
+  </style>
+</head>
+<body>
+
+<h2>팀 레코드 조회</h2>
+
+<table id="teamRecordTable">
+  <thead>
+  <tr>
+    <th>팀</th>
+    <th>날짜</th>
+    <th>순위</th>
+    <th>경기 수</th>
+    <th>승</th>
+    <th>패</th>
+    <th>무</th>
+    <th>승률</th>
+    <th>게임차</th>
+  </tr>
+  </thead>
+  <tbody>
+  <!-- JS로 데이터 삽입 -->
+  </tbody>
+</table>
+
+<script>
+  fetch('/team/record')
+      .then(response => response.json())
+      .then(data => {
+          const tbody = document.querySelector("#teamRecordTable tbody");
+          data.forEach(record => {
+              const row = document.createElement("tr");
+
+              row.innerHTML = `
+                  <td>${record.teamName}</td>
+                  <td>${record.date}</td>
+                  <td>${record.teamRank}</td>
+                  <td>${record.game}</td>
+                  <td>${record.win}</td>
+                  <td>${record.lose}</td>
+                  <td>${record.draw}</td>
+                  <td>${record.winningRate.toFixed(3)}</td>
+                  <td>${record.gamesBehind}</td>
+              `;
+
+              tbody.appendChild(row);
+          });
+      })
+      .catch(err => console.error("팀 레코드 로딩 실패:", err));
+</script>
+
+</body>
+</html>

@@ -81,7 +81,8 @@ public class PlayerRepositoryImpl implements PlayerRepositoryCustom{
                         pitcher.strikeouts,
                         pitcher.hold,
                         pitcher.save,
-                        pitcher.position
+                        pitcher.position,
+                        pitcher.qualifiedInnings
                 ))
                 .from(pitcher)
                 .join(player).on(player.id.eq(pitcher.id))
@@ -110,7 +111,8 @@ public class PlayerRepositoryImpl implements PlayerRepositoryCustom{
         List<Tuple> tuples = queryFactory
                 .select(player.name, player.birthDate, player.game, player.playerType, team.name,
                         batter.average, batter.hit, batter.homeRun, batter.rbi, batter.ops, batter.batterPosition,
-                        pitcher.win, pitcher.lose, pitcher.ip, pitcher.era, pitcher.strikeouts, pitcher.hold, pitcher.save, pitcher.position)
+                        pitcher.win, pitcher.lose, pitcher.ip, pitcher.era, pitcher.strikeouts,
+                        pitcher.hold, pitcher.save, pitcher.position, pitcher.qualifiedInnings)
                 .from(player)
                 .leftJoin(player.team, team)
                 .leftJoin(batter).on(player.id.eq(batter.id))
@@ -153,7 +155,8 @@ public class PlayerRepositoryImpl implements PlayerRepositoryCustom{
                         tuple.get(pitcher.strikeouts),
                         tuple.get(pitcher.hold),
                         tuple.get(pitcher.save),
-                        tuple.get(pitcher.position)
+                        tuple.get(pitcher.position),
+                        tuple.get(pitcher.qualifiedInnings)
                 ));
             } else {
                 results.add(new DefaultPlayerDto(
@@ -175,6 +178,8 @@ public class PlayerRepositoryImpl implements PlayerRepositoryCustom{
         return new PageImpl<>(results, pageable, total);
     }
 }
+
+
 
 
 

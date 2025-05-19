@@ -6,15 +6,14 @@ import java.util.Comparator;
 
 import Baseball.record.KBO.domain.team.Team;
 import Baseball.record.KBO.domain.team.TeamName;
+import Baseball.record.KBO.domain.team.TeamRecord;
 import Baseball.record.KBO.dto.*;
-import Baseball.record.KBO.repository.BatterRepository;
-import Baseball.record.KBO.repository.PitcherRepository;
-import Baseball.record.KBO.repository.PlayerRepository;
-import Baseball.record.KBO.repository.TeamRepository;
+import Baseball.record.KBO.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +22,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static Baseball.record.KBO.domain.team.QTeam.team;
 import static java.util.stream.Collectors.toList;
 
 @Transactional
@@ -34,6 +34,7 @@ public class PlayerService {
     private final TeamRepository teamRepository;
     private final BatterRepository batterRepository;
     private final PitcherRepository pitcherRepository;
+    private final TeamRecordRepository teamRecordRepository;
 
     public <T extends Player> T save(T player) {
         T savedPlayer = (T) playerRepository.save(player);
@@ -56,7 +57,7 @@ public class PlayerService {
     }
 
     public List<PlayerDto> findTeamNameWithPlayer(TeamName teamName) {
-        List<Player> findPlayers = playerRepository.findByTeam_Name(teamName);
+        List<Player> findPlayers = playerRepository.findByTeamName(teamName);
         return findPlayers.stream()
                 .map(p -> {
                     if (p instanceof Batter) {  // ✅ Batter인 경우
@@ -71,7 +72,7 @@ public class PlayerService {
                         return new PitcherDto(
                                 pitch.getName(), pitch.getBirthDate(), pitch.getGame(), pitch.getTeam().getName(), pitch.getPlayerType(),
                                 pitch.getWin(), pitch.getLose(), pitch.getIp(), pitch.getEra(),
-                                pitch.getStrikeouts(), pitch.getHold(), pitch.getSave(), pitch.getPosition()
+                                pitch.getStrikeouts(), pitch.getHold(), pitch.getSave(), pitch.getPosition(), pitch.isQualifiedInnings()
                         );
                     } else {
                         return null; // 다른 타입의 Player가 있을 경우 (예외 처리)
@@ -126,7 +127,7 @@ public class PlayerService {
                             batterDto.getBatterPosition()
                     );
                 })
-                .collect(Collectors.toList());
+                .collect(toList());
 
         return playerRepository.saveAll(batters);
     }
@@ -154,10 +155,11 @@ public class PlayerService {
                             pitcherDto.getStrikeouts(),
                             pitcherDto.getHold(),
                             pitcherDto.getSave(),
-                            pitcherDto.getPosition()
+                            pitcherDto.getPosition(),
+                            pitcherDto.isQualifiedInnings()
                     );
                 })
-                .collect(Collectors.toList());
+                .collect(toList());
 
         return playerRepository.saveAll(pitchers);
     }
@@ -225,11 +227,12 @@ public class PlayerService {
     }
 
     public Map<String, Object> getBatters(String teamName, String batterPosition) {
-        List<Batter> results;
 
         // Enum 변환
         TeamName team = parseTeamName(teamName);
         BatterPosition position = parseBatterPosition(batterPosition);
+
+        List<Batter> results;
 
         if (team == null && position == null) {
             results = batterRepository.findAll();
@@ -244,13 +247,14 @@ public class PlayerService {
         List<BatterResponseDto> dtoList = results.stream()
                 .map(BatterResponseDto::new).toList();
 
-        return Map.of("content", dtoList);
+        return Map.of(
+                "content", dtoList
+        );
     }
 
     public Map<String, Object> getPitchers(String teamName, String position) {
         List<Pitcher> results;
 
-        // Enum 변환
         TeamName team = parseTeamName(teamName);
         PitcherPosition pitcherPosition = parsePitcherPosition(position);
 
@@ -259,16 +263,19 @@ public class PlayerService {
         } else if (team != null && pitcherPosition != null) {
             results = pitcherRepository.findByTeamNameAndPosition(team, pitcherPosition);
         } else if (team != null) {
-            results = pitcherRepository.findByTeamName(team);
+            results = pitcherRepository.findByTeamName(team); // ✅ team만 필터링
         } else {
-            results = pitcherRepository.findByPosition(pitcherPosition);
+            results = pitcherRepository.findByPosition(pitcherPosition); // ✅ position만 필터링
         }
 
         List<PitcherResponseDto> dtoList = results.stream()
-                .map(PitcherResponseDto::new).toList();
+                .map(PitcherResponseDto::new)
+                .toList();
 
         return Map.of("content", dtoList);
     }
+
+
     private TeamName parseTeamName(String name) {
         try {
             return (name == null || name.equals("ALL")) ? null : TeamName.valueOf(name);
@@ -290,6 +297,26 @@ public class PlayerService {
             return (position == null || position.equals("ALL")) ? null : PitcherPosition.valueOf(position);
         } catch (IllegalArgumentException e) {
             return null;
+        }
+    }
+
+    public void markQualifiedInnings(Map<String, PitcherDto2> pitcherMap) {
+        for (PitcherDto2 pitcher : pitcherMap.values()) {
+            try {
+                TeamName teamName = TeamName.fromKoreanName(String.valueOf(pitcher.getTeamName()))
+                        .orElseThrow(() -> new IllegalArgumentException("팀 이름 매칭 실패: " + pitcher.getTeamName()));
+
+                TeamRecord latestRecord = teamRecordRepository.findTopByTeamNameOrderByDateDesc(teamName)
+                        .orElseThrow(() -> new IllegalStateException("팀 기록 없음: " + teamName));
+
+                double innings = pitcher.getIp();
+                int teamGames = latestRecord.getGame();
+                boolean isQualified = innings >= teamGames;
+
+                pitcher.setQualifiedInnings(isQualified);
+            } catch (Exception e) {
+                System.out.println("⚠️ 규정 이닝 판단 실패: " + pitcher.getName() + " - " + e.getMessage());
+            }
         }
     }
 

@@ -66,8 +66,7 @@ public class PlayerController {
     @GetMapping("/find/PlayerName")
     public ResponseEntity<?> getPlayerByName(@RequestParam String name) {
         try {
-            PlayerDto player = playerService.findPlayerByName(name);
-            return ResponseEntity.ok(player);
+            return ResponseEntity.ok(playerService.findPlayerByName(name));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("message", "선수를 찾을 수 없습니다."));

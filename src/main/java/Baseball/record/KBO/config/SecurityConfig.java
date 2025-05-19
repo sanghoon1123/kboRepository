@@ -27,9 +27,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/index.html", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/", "/index.html", "/player-search.html", "/team-search.html", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/auth/login", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/kbo/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/team/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/details").permitAll()
                         .requestMatchers(HttpMethod.POST, "/kbo/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/kbo/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/kbo/**").hasRole("ADMIN")

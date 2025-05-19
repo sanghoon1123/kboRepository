@@ -20,9 +20,11 @@ public class PitcherDto2 extends PlayerDto2{
     private int hold;
     private int save;
     private PitcherPosition position;
+    private boolean qualifiedInnings;
 
 
-    public PitcherDto2(String name, LocalDate birthDate, int game, String teamName, int win, int lose, double ip, double era, int strikeouts, int hold, int save, PitcherPosition position) {
+
+    public PitcherDto2(String name, LocalDate birthDate, int game, String teamName, int win, int lose, double ip, double era, int strikeouts, int hold, int save, PitcherPosition position, boolean qualifiedInnings) {
         super();  // PlayerDto2의 기본 생성자 호출
         this.setName(name);
         this.setBirthDate(birthDate);
@@ -36,10 +38,11 @@ public class PitcherDto2 extends PlayerDto2{
         this.hold = hold;
         this.save = save;
         this.position = position;
+        this.qualifiedInnings = qualifiedInnings;
     }
 
 
-    public PitcherDto2(String name, LocalDate birthDate, int game, Long teamId, int win, int lose, double ip, double era, int strikeouts, int hold, int save, PitcherPosition position) {
+    public PitcherDto2(String name, LocalDate birthDate, int game, Long teamId, int win, int lose, double ip, double era, int strikeouts, int hold, int save, PitcherPosition position, boolean qualifiedInnings)  {
     }
 
 

@@ -55,10 +55,12 @@ public class TeamCrawler implements CommandLineRunner {
 
                 String teamNameKor = cells.get(1).getText();
                 int rank = Integer.parseInt(cells.get(0).getText());
+                int game = Integer.parseInt(cells.get(2).getText());
                 int win = Integer.parseInt(cells.get(3).getText());
                 int lose = Integer.parseInt(cells.get(4).getText());
                 int draw = Integer.parseInt(cells.get(5).getText());
                 double winRate = Double.parseDouble(cells.get(6).getText());
+                double gamesBehind = Double.parseDouble(cells.get(7).getText());
 
                 Team team = teamService.findOrCreateByKoreanName(teamNameKor);
                 TeamName teamNameEnum = TeamName.fromKoreanName(teamNameKor)
@@ -69,10 +71,12 @@ public class TeamCrawler implements CommandLineRunner {
                 record.setTeamName(teamNameEnum);
                 record.setDate(today);
                 record.setTeamRank(rank);
+                record.setGame(game);
                 record.setWin(win);
                 record.setLose(lose);
                 record.setDraw(draw);
                 record.setWinningRate(winRate);
+                record.setGamesBehind(gamesBehind);
 
                 teamRecords.add(record);
             }

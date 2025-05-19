@@ -3,11 +3,8 @@ package Baseball.record.KBO.service;
 import Baseball.record.KBO.domain.team.Team;
 import Baseball.record.KBO.domain.team.TeamName;
 import Baseball.record.KBO.domain.team.TeamRecord;
-import Baseball.record.KBO.dto.BatterDto;
-import Baseball.record.KBO.dto.PitcherDto;
-import Baseball.record.KBO.dto.PlayerDto;
 import Baseball.record.KBO.dto.TeamDto;
-import Baseball.record.KBO.repository.PlayerRepository;
+import Baseball.record.KBO.dto.TeamRecordDto;
 import Baseball.record.KBO.repository.TeamRecordRepository;
 import Baseball.record.KBO.repository.TeamRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -77,5 +71,10 @@ public class TeamService {
 
     public void saveTeamRecords(List<TeamRecord> records) {
         teamRecordRepository.saveAll(records);
+    }
+
+    public List<TeamRecordDto> getAllTeamRecords(){
+         return teamRecordRepository.findAll().stream()
+                 .map(t -> new TeamRecordDto(t)).collect(toList());
     }
 }

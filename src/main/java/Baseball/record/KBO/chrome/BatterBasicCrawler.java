@@ -31,7 +31,8 @@ public class BatterBasicCrawler implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\eun04\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "C:/Users/eun04/Downloads/chromedriver-win64/chromedriver-win64/chromedriver.exe");
+
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless=new"); // 최신 버전 대응
