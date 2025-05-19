@@ -25,10 +25,13 @@ public class Pitcher extends Player {
     private int save;
     @Enumerated(EnumType.STRING) @Nullable
     private PitcherPosition position;
+    @Column(name = "qualified_innings")
+    private boolean qualifiedInnings;
+
 
     public Pitcher(String name, LocalDate birthDate, int game, Team team,
                    int win, int lose, double ip, double era,
-                   int strikeouts, int hold, int save, PitcherPosition position) {
+                   int strikeouts, int hold, int save, PitcherPosition position, boolean qualifiedInnings) {
         super(name, birthDate, game, team);
         this.win = win;
         this.lose = lose;
@@ -38,6 +41,7 @@ public class Pitcher extends Player {
         this.hold = hold;
         this.save = save;
         this.position = position;
+        this.qualifiedInnings = qualifiedInnings;
     }
 
     protected Pitcher() {}
@@ -54,6 +58,7 @@ public class Pitcher extends Player {
             this.hold = pitcherDto.getHold();
             this.save = pitcherDto.getSave();
             this.position = position;
+            this.qualifiedInnings = qualifiedInnings;
         } else {
             throw new IllegalArgumentException("잘못된 DTO 타입입니다.");
         }

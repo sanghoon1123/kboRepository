@@ -5,6 +5,7 @@ import Baseball.record.KBO.domain.team.TeamName;
 import Baseball.record.KBO.dto.PitcherDto2;
 import Baseball.record.KBO.repository.TeamRepository;
 import Baseball.record.KBO.service.PlayerService;
+import Baseball.record.KBO.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -27,6 +28,7 @@ public class PitcherBasicCrawler implements CommandLineRunner {
 
     private final TeamRepository teamRepository;
     private final PlayerService playerService;
+    private final TeamService teamService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -103,7 +105,7 @@ public class PitcherBasicCrawler implements CommandLineRunner {
 
                     PitcherDto2 pitcherDto = new PitcherDto2(
                             name, birthDate, game, team.getName().getKoreanName(),
-                            win, lose, ip, era, strikeouts, hold, save, null
+                            win, lose, ip, era, strikeouts, hold, save, null, false
                     );
 
                     String key = name + "_" + team.getName() + "_" + birthDate;
@@ -116,7 +118,9 @@ public class PitcherBasicCrawler implements CommandLineRunner {
         }
 
         driver.quit();
+
         playerService.pitcherPositionFilter(playerMap);
+        playerService.markQualifiedInnings(playerMap); // 규정 이닝 마킹
         playerService.saveAllPitchers(playerMap);
         System.out.println("✅ 모든 투수 저장 완료!");
     }
@@ -177,4 +181,5 @@ public class PitcherBasicCrawler implements CommandLineRunner {
             return 0.0;
         }
     }
+
 }

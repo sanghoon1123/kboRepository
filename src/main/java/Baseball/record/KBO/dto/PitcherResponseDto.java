@@ -22,6 +22,7 @@ public class PitcherResponseDto {
     private int save;
     private PitcherPosition position;
     private String teamName;
+    private boolean qualifiedInnings;
 
     public PitcherResponseDto(Pitcher pitcher) {
         this.name = pitcher.getName();
@@ -36,6 +37,7 @@ public class PitcherResponseDto {
         this.save = pitcher.getSave();
         this.position = pitcher.getPosition();
         this.teamName = pitcher.getTeam().getName().toString();
+        this.qualifiedInnings = pitcher.isQualifiedInnings();
     }
 
     public PitcherResponseDto() {

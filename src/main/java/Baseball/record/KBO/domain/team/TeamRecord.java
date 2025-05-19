@@ -22,9 +22,10 @@ public class TeamRecord {
     private LocalDate date;
     @Column(name = "team_rank")
     private int teamRank;
+    private int game;
     private int win;
     private int lose;
     private int draw;
     private double winningRate;
-
+    private double gamesBehind;
 }

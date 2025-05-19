@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>KBO 선수 검색</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    label { margin-right: 10px; }
+    select, button { margin: 5px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th {
+      background-color: #f2f2f2;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+    }
+    th .sort-arrow {
+      font-size: 12px;
+      color: #bbb;
+      margin-left: 4px;
+      transition: color 0.2s;
+    }
+    th:hover .sort-arrow {
+      color: #555;
+    }
+    th.sorted-asc .arrow-up,
+    th.sorted-desc .arrow-down {
+      color: #000;
+    }
+    th[title] {
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+
+<h2>KBO 선수 검색</h2>
+
+<label for="playerName">선수 이름:</label>
+<input type="text" id="playerName" placeholder="이름 입력" />
+<button onclick="searchPlayers()">이름 검색</button>
+
+<label for="team">팀 선택:</label>
+<select id="team">
+  <option value="ALL">전체</option>
+  <option value="SSG">SSG</option>
+  <option value="LG">LG</option>
+  <option value="KT">KT</option>
+  <option value="NC">NC</option>
+  <option value="KIA">KIA</option>
+  <option value="키움">키움</option>
+  <option value="롯데">롯데</option>
+  <option value="두산">두산</option>
+  <option value="한화">한화</option>
+  <option value="삼성">삼성</option>
+</select>
+
+<label for="playerType">포지션:</label>
+<select id="playerType" onchange="updateDetailPosition();">
+  <option value="ALL">전체</option>
+  <option value="batter">타자</option>
+  <option value="pitcher">투수</option>
+</select>
+
+<label for="detailPosition">세부 포지션:</label>
+<select id="detailPosition" style="display:none">
+  <option value="ALL">전체</option>
+</select>
+
+<!-- ✅ style 속성 제거하여 항상 표시 -->
+<label id="inningQualifiedLabel" for="inningQualified" style="margin-left: 10px;">
+  <input type="checkbox" id="inningQualified" />
+  규정 이닝(경기수 이상)
+</label>
+
+<button onclick="searchPlayers()">세부 필터 검색</button>
+
+<table id="resultTable" style="display:none"> 
+  <thead>
+  <tr id="tableHeader"></tr>
+  </thead>
+  <tbody id="tableBody"></tbody>
+</table>
+
+<script>
+  const batterPositions = [
+    { label: "포수", value: "C" },
+    { label: "1루수", value: "FIRST" },
+    { label: "2루수", value: "SECOND" },
+    { label: "유격수", value: "SS" },
+    { label: "3루수", value: "THIRD" },
+    { label: "좌익수", value: "LEFT" },
+    { label: "중견수", value: "CENTER" },
+    { label: "우익수", value: "RIGHT" },
+    { label: "지명타자", value: "DH" }
+  ];
+
+  const pitcherPositions = [
+    { label: "선발", value: "SP" },
+    { label: "중간", value: "RP" },
+    { label: "마무리", value: "CP" }
+  ];
+
+  // ✅ 수정된 포지션 관련 함수
+  function updateDetailPosition() {
+    const playerType = document.getElementById('playerType').value;
+    const detailPosition = document.getElementById('detailPosition');
+    const inningLabel = document.getElementById('inningQualifiedLabel');
+
+    // 포지션 드롭다운 초기화
+    detailPosition.innerHTML = '<option value="ALL">전체</option>';
+
+    if (playerType === 'batter') {
+      batterPositions.forEach(pos => {
+        const option = document.createElement('option');
+        option.value = pos.value;
+        option.innerText = pos.label;
+        detailPosition.appendChild(option);
+      });
+      detailPosition.style.display = 'inline';
+      inningLabel.style.display = 'none'; // ✅ 타자면 체크박스 숨김
+    } else if (playerType === 'pitcher') {
+      pitcherPositions.forEach(pos => {
+        const option = document.createElement('option');
+        option.value = pos.value;
+        option.innerText = pos.label;
+        detailPosition.appendChild(option);
+      });
+      detailPosition.style.display = 'inline';
+      inningLabel.style.display = 'inline'; // ✅ 투수면 체크박스 표시
+    } else {
+      detailPosition.style.display = 'none';
+      inningLabel.style.display = 'inline'; // ✅ 전체일 경우 체크박스 표시
+    }
+  }
+
+  window.onload = function () {
+    updateDetailPosition(); // ✅ 페이지 로드시 초기 상태 반영
+  }
+
+  async function searchPlayers() {
+  const team = document.getElementById("team").value;
+  const playerType = document.getElementById("playerType").value;
+  const detailPosition = document.getElementById("detailPosition").value;
+  const qualifiedOnly = document.getElementById("inningQualified").checked;
+  const headerRow = document.getElementById("tableHeader");
+  const body = document.getElementById("tableBody");
+  const table = document.getElementById("resultTable");
+  const playerName = document.getElementById("playerName").value.trim();
+
+  headerRow.innerHTML = '';
+  body.innerHTML = '';
+  table.style.display = 'table';
+
+  let players = [];
+
+  try {
+  // 1. API 호출 (선수 타입에 따라)
+  if (playerType === "ALL") {
+    const [battersRes, pitchersRes] = await Promise.all([
+      fetch(`http://localhost:8080/kbo/details?playerType=batter${team !== "ALL" ? `&teamName=${team}` : ""}`),
+      fetch(`http://localhost:8080/kbo/details?playerType=pitcher${team !== "ALL" ? `&teamName=${team}` : ""}`)
+    ]);
+    const battersData = await battersRes.json();
+    const pitchersData = await pitchersRes.json();
+    players = [...battersData.content, ...pitchersData.content];
+  } else {
+    let url = `http://localhost:8080/kbo/details?playerType=${playerType}`;
+    if (team !== "ALL") url += `&teamName=${team}`;
+    if (detailPosition !== "ALL") url += `&position=${detailPosition}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    players = data.content;
+  }
+
+  // 2. 필터링 (이름 포함)
+  players = players.filter(p => {
+    if (playerName && !p.name.includes(playerName)) return false;
+    if (detailPosition !== "ALL") {
+      if (p.batterPosition && p.batterPosition !== detailPosition) return false;
+      if (p.position && p.position !== detailPosition) return false;
+    }
+    if (qualifiedOnly && p.qualifiedInnings !== true) return false;
+    return true;
+  });
+
+  // 3. 출력
+  if (players.length === 0) {
+    body.innerHTML = `<tr><td colspan="15">결과가 없습니다.</td></tr>`;
+    return;
+  }
+
+  const isBatter = !!players[0].batterPosition;
+  const headers = isBatter
+    ? ["이름", "생년월일", "경기수", "팀명", "타율", "안타", "홈런", "타점", "OPS", "포지션"]
+    : ["이름", "생년월일", "경기수", "팀명", "승", "패", "이닝", "ERA", "삼진", "홀드", "세이브", "포지션"];
+
+  headers.forEach((text, i) => {
+    const th = document.createElement("th");
+    th.title = "클릭하여 정렬";
+    th.innerHTML = `${text} <span class="sort-arrow arrow-up">▴</span><span class="sort-arrow arrow-down">▾</span>`;
+    th.onclick = () => {
+      currentSort.column = i;
+      sortTableByColumn(i);
+    };
+    headerRow.appendChild(th);
+  });
+
+  const teamOrder = ["SSG", "LG", "KT", "NC", "KIA", "키움", "롯데", "두산", "한화", "삼성"];
+  if (team === "ALL") players.sort((a, b) => teamOrder.indexOf(a.teamName) - teamOrder.indexOf(b.teamName));
+
+  players.forEach(p => {
+    const tr = document.createElement("tr");
+    const values = isBatter
+      ? [p.name, p.birthDate, p.game, p.teamName, p.average, p.hit, p.homeRun, p.rbi, p.ops, p.batterPosition]
+      : [p.name, p.birthDate, p.game, p.teamName, p.win, p.lose, p.ip, p.era, p.strikeouts, p.hold, p.save, p.position];
+    values.forEach(val => {
+      const td = document.createElement("td");
+      td.innerText = val;
+      tr.appendChild(td);
+    });
+    body.appendChild(tr);
+  });
+
+} catch (err) {
+  console.error("검색 오류:", err);
+  alert("API 호출 실패. 서버 상태를 확인하세요.");
+}
+}
+
+   let currentSort = {
+    column: null,
+    ascending: true
+  };
+
+  function sortTableByColumn(columnIndex) {
+    const table = document.getElementById("resultTable");
+    const tbody = document.getElementById("tableBody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+    const isNumeric = rows.every(row => !isNaN(row.children[columnIndex].innerText.replace(/,/g, '')));
+
+    currentSort.ascending = (currentSort.column === columnIndex) ? !currentSort.ascending : true;
+    currentSort.column = columnIndex;
+
+    rows.sort((a, b) => {
+      const valA = a.children[columnIndex].innerText;
+      const valB = b.children[columnIndex].innerText;
+
+      const aVal = isNumeric ? parseFloat(valA.replace(/,/g, '')) : valA;
+      const bVal = isNumeric ? parseFloat(valB.replace(/,/g, '')) : valB;
+
+      if (aVal < bVal) return currentSort.ascending ? -1 : 1;
+      if (aVal > bVal) return currentSort.ascending ? 1 : -1;
+      return 0;
+    });
+
+    // 정렬된 행 다시 추가
+    tbody.innerHTML = "";
+    rows.forEach(row => tbody.appendChild(row));
+
+    // 정렬 화살표 표시 갱신
+    const headers = document.querySelectorAll("#tableHeader th");
+    headers.forEach((th, idx) => {
+      th.classList.remove("sorted-asc", "sorted-desc");
+      if (idx === columnIndex) {
+        th.classList.add(currentSort.ascending ? "sorted-asc" : "sorted-desc");
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
