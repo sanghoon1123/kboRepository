@@ -1,39 +1,35 @@
-package Baseball.record.KBO.chrome;
+package Baseball.record.KBO.service;
 
 import Baseball.record.KBO.domain.team.Team;
 import Baseball.record.KBO.domain.team.TeamName;
 import Baseball.record.KBO.dto.PitcherDto2;
 import Baseball.record.KBO.repository.TeamRepository;
-import Baseball.record.KBO.service.PlayerService;
-import Baseball.record.KBO.service.TeamService;
-import lombok.RequiredArgsConstructor;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.*;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-@Component
-@RequiredArgsConstructor
-@Order(2)
-@Profile("!test")
-public class PitcherBasicCrawler implements CommandLineRunner {
+@Service
+public class PitcherCrawlerService {
 
-    private final TeamRepository teamRepository;
-    private final PlayerService playerService;
-    private final TeamService teamService;
+    @Autowired TeamRepository teamRepository;
+    @Autowired PlayerService playerService;
 
-    @Override
-    public void run(String... args) throws Exception {
+    public void crawlAndSavePitcher() throws Exception {
         System.setProperty("webdriver.chrome.driver", "C:\\Users\\eun04\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe");
 
         ChromeOptions options = new ChromeOptions();
@@ -55,6 +51,8 @@ public class PitcherBasicCrawler implements CommandLineRunner {
         Map<String, PitcherDto2> playerMap = new HashMap<>();
 
         for (String teamValue : teamValues) {
+            if (playerMap.size() >= 10) break;
+
             Select teamSelect = new Select(driver.findElement(
                     By.id("cphContents_cphContents_cphContents_ddlTeam_ddlTeam")));
 
@@ -75,7 +73,7 @@ public class PitcherBasicCrawler implements CommandLineRunner {
 
             for (int i = 0; i < headers.size(); i++) {
                 String headerText = headers.get(i).getText().trim();
-                colIndex.put(headerText, i);  // 예: "ERA" -> 3, "SV" -> 7
+                colIndex.put(headerText, i);
             }
 
             String teamKor = teamSelect.getFirstSelectedOption().getText();
@@ -86,6 +84,8 @@ public class PitcherBasicCrawler implements CommandLineRunner {
             if (team == null) throw new IllegalArgumentException("DB에 존재하지 않는 팀: " + teamKor);
 
             for (int i = 1; i < rows.size(); i++) {
+                if (playerMap.size() >= 10) break;
+
                 try {
                     List<WebElement> cols = rows.get(i).findElements(By.tagName("td"));
                     WebElement nameCell = cols.get(colIndex.get("선수명"));
@@ -103,7 +103,6 @@ public class PitcherBasicCrawler implements CommandLineRunner {
                     double ip = parseInningsBaseballStyle(cols.get(colIndex.get("IP")).getText());
                     double era = parseDoubleSafe(cols.get(colIndex.get("ERA")).getText());
                     int strikeouts = parseIntSafe(cols.get(colIndex.get("SO")).getText());
-
 
                     PitcherDto2 pitcherDto = new PitcherDto2(
                             name, birthDate, game, team.getName().getKoreanName(),
@@ -183,5 +182,4 @@ public class PitcherBasicCrawler implements CommandLineRunner {
             return 0.0;
         }
     }
-
 }

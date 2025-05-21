@@ -1,41 +1,41 @@
-package Baseball.record.KBO.chrome;
+package Baseball.record.KBO.service;
 
 import Baseball.record.KBO.domain.team.Team;
 import Baseball.record.KBO.domain.team.TeamName;
 import Baseball.record.KBO.domain.team.TeamRecord;
-import Baseball.record.KBO.repository.TeamRecordRepository;
+import Baseball.record.KBO.dto.PitcherDto2;
 import Baseball.record.KBO.repository.TeamRepository;
-import Baseball.record.KBO.service.TeamService;
-import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.swing.text.Document;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-@Component
-@RequiredArgsConstructor
-@Order(1)
-@Profile("!test")
-public class TeamCrawler implements CommandLineRunner {
+@Service
+public class TeamCrawlerService {
 
-    private final TeamService teamService;
+    @Autowired TeamService teamService;
 
-    @Override
-    public void run(String... args) {
+    public void crawlAndSaveTeamData() throws Exception {
+        System.out.println("=== 크롤링 테스트 시작 ===");
         System.setProperty("webdriver.chrome.driver", "C:\\Users\\eun04\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe");
 
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new"); // 최신 버전 대응
+        options.addArguments("--headless=new");
         options.addArguments("--disable-gpu");
         options.addArguments("--window-size=1920,1080");
 
@@ -43,7 +43,7 @@ public class TeamCrawler implements CommandLineRunner {
 
         try {
             driver.get("https://www.koreabaseball.com/Record/TeamRank/TeamRankDaily.aspx");
-            Thread.sleep(2000); // 페이지 로딩 대기
+            Thread.sleep(2000);
 
             WebElement tbody = driver.findElement(By.cssSelector(".tData tbody"));
             List<WebElement> rows = tbody.findElements(By.tagName("tr"));
@@ -86,8 +86,6 @@ public class TeamCrawler implements CommandLineRunner {
             teamService.saveTeamRecords(teamRecords);
             System.out.println("✅ 팀 기록 저장 완료");
 
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             driver.quit();
         }
