@@ -191,10 +191,16 @@
     return;
   }
 
+ let headers;
+if (playerType === "ALL") {
+  headers = ["이름", "생년월일", "경기수", "팀명"];
+} else {
   const isBatter = !!players[0].batterPosition;
-  const headers = isBatter
+  headers = isBatter
     ? ["이름", "생년월일", "경기수", "팀명", "타율", "안타", "홈런", "타점", "OPS", "포지션"]
     : ["이름", "생년월일", "경기수", "팀명", "승", "패", "이닝", "ERA", "삼진", "홀드", "세이브", "포지션"];
+}
+
 
   headers.forEach((text, i) => {
     const th = document.createElement("th");
@@ -212,9 +218,12 @@
 
   players.forEach(p => {
     const tr = document.createElement("tr");
-    const values = isBatter
+   const values = playerType === "ALL"
+  ? [p.name, p.birthDate, p.game, p.teamName]
+  : (!!p.batterPosition
       ? [p.name, p.birthDate, p.game, p.teamName, p.average, p.hit, p.homeRun, p.rbi, p.ops, p.batterPosition]
-      : [p.name, p.birthDate, p.game, p.teamName, p.win, p.lose, p.ip, p.era, p.strikeouts, p.hold, p.save, p.position];
+      : [p.name, p.birthDate, p.game, p.teamName, p.win, p.lose, p.ip, p.era, p.strikeouts, p.hold, p.save, p.position]
+    );
     values.forEach(val => {
       const td = document.createElement("td");
       td.innerText = val;
