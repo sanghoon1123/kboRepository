@@ -62,7 +62,7 @@ public class PlayerController {
         return playerService.findTeamNameWithPlayer(TeamName.valueOf(teamName));
     }
 
-    @Operation(summary = "선수 전체 조회", description = "선수 이름을 입력하면 해당 선수의 기록을 조회할 수 있습니다.")
+    @Operation(summary = "선수 이름 조회", description = "선수 이름을 입력하면 해당 선수의 기록을 조회할 수 있습니다.")
     @GetMapping("/find/PlayerName")
     public ResponseEntity<?> getPlayerByName(@RequestParam String name) {
         try {
