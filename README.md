@@ -1,7 +1,7 @@
 # 프로젝트 ERD 다이어그램
 
 ![ERD 다이어그램](images/Untitled.png)
-![API 문서](images/api_docs.png) 
+![API 문서](images/api.png) 
 
 # ⚾ KBO 선수 검색 웹 애플리케이션
 
@@ -20,14 +20,14 @@ API 연동 및 정렬 기능도 포함되어 있습니다.
 
 ## 🔧 기술 스택
 
-| 구분 | 기술 |
-|------|------|
-| 프론트엔드 | HTML5, CSS, JavaScript (Vanilla JS) |
-| 백엔드 | Spring Boot 3.4.3, JPA, QueryDSL, Spring Security, JWT |
-| DB | MySQL, H2 (개발용) |
-| 크롤링 | Selenium (Java) |
-| API 문서화 | SpringDoc OpenAPI |
-| 배포 | AWS EC2, RDS, Docker |
+| 구분      | 기술                                                     |
+|---------|--------------------------------------------------------|
+| 프론트엔드   | HTML5, CSS, JavaScript (Vanilla JS)                    |
+| 백엔드     | Spring Boot 3.4.3, JPA, QueryDSL, Spring Security, JWT |
+| DB      | MySQL, H2 (개발용)                                        |
+| 크롤링     | Selenium (Java)                                        |
+| API 문서화 | SpringDoc OpenAPI                                      |
+| 배포      | AWS EC2, RDS, Docker                                   |
 
 ---
 
@@ -52,18 +52,18 @@ java -jar build/libs/kbo-api.jar
 ## 📁 프로젝트 구조
 
 Baseball/record/KBO
-├── chrome              # Selenium 크롤러 (타자, 투수, 팀 정보 수집)
-├── config              # 프로젝트 설정 (JWT, Swagger, Security 등)
-├── controller          # REST API 컨트롤러
-├── domain              # 도메인 엔티티
-├── dto                 # 요청/응답 DTO
-├── repository          # JPA 레포지토리
-├── service             # 비즈니스 로직 서비스
-└── KboApplication.java # 메인 클래스
+├── chrome                    # Selenium 크롤러 (타자, 투수, 팀 정보 수집)
+├── config                    # 프로젝트 설정 (JWT, Swagger, Security 등)
+├── controller                # REST API 컨트롤러
+├── domain                    # 도메인 엔티티
+├── dto                       # 요청/응답 DTO
+├── repository                # JPA 레포지토리
+├── service                   # 비즈니스 로직 서비스
+└── KboApplication.java       # 메인 클래스
 
 resources
-├── static              # 정적 리소스 (HTML)
-└── application.properties # 설정 파일
+├── static                    # 정적 리소스 (HTML)
+└── application.properties    # 설정 파일
 
 🔌 API 예시
 
