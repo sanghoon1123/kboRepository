@@ -14,7 +14,8 @@ API 연동 및 정렬 기능도 포함되어 있습니다.
 
 ## 📸 데모
 
-<img src="https://your-screenshot-url.com/demo.png" width="100%" alt="KBO 선수 검색 데모 이미지" />
+<img src="https://raw.githubusercontent.com/sanghoon1123/kboRepository/main/demo/demo.gif" width="100%" alt="KBO 선수 검색 데모 GIF" />
+
 
 ---
 
