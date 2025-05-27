@@ -22,11 +22,6 @@ public class TeamController {
 
     private final TeamService teamService;
 
-    @GetMapping("/name")
-    public List<TeamDto> searchTeam(@ModelAttribute TeamName teamName){
-        return teamService.findByTeamName(teamName);
-    }
-
     @Operation(summary = "모든 팀 기록 조회", description = "모든 팀의 시즌 기록을 조회합니다.")
     @GetMapping("/record")
     public List<TeamRecordDto> allTeamRecord(){
