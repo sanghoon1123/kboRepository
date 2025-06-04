@@ -2,7 +2,6 @@ package Baseball.record.KBO.service;
 
 import Baseball.record.KBO.domain.player.*;
 
-import java.util.Comparator;
 
 import Baseball.record.KBO.domain.team.Team;
 import Baseball.record.KBO.domain.team.TeamName;
@@ -13,16 +12,12 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static Baseball.record.KBO.domain.team.QTeam.team;
 import static java.util.stream.Collectors.toList;
 
 @Transactional
@@ -82,10 +77,10 @@ public class PlayerService {
                 .collect(toList());  // ✅ 변환된 리스트 반환
     }
 
-    public PlayerDto findPlayerByName(String playerName) {
-        return playerRepository.findPlayerByName(playerName)
-                .orElseThrow(() -> new EntityNotFoundException("player not found : " + playerName));
-    }
+        public PlayerDto findPlayerByName(String playerName) {
+            return playerRepository.findPlayerByName(playerName)
+                    .orElseThrow(() -> new EntityNotFoundException("player not found : " + playerName));
+        }
 
     public Page<? extends PlayerDto> findAllPlayersWithDetails(TeamName teamName, String playerType, Pageable pageable) {
         return playerRepository.findAllPlayersWithDetails(teamName, playerType, pageable);

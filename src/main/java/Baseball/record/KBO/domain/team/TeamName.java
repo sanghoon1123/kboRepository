@@ -1,6 +1,6 @@
 package Baseball.record.KBO.domain.team;
 
-import lombok.Getter;
+
 
 import java.util.Arrays;
 import java.util.Optional;

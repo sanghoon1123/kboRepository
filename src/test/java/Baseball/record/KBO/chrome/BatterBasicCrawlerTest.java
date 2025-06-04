@@ -1,14 +1,12 @@
 package Baseball.record.KBO.chrome;
 
-import Baseball.record.KBO.service.BatterCrawlerService;
-import Baseball.record.KBO.service.TeamCrawlerService;
+import Baseball.record.KBO.chrome.crawlerService.BatterCrawlerService;
+import Baseball.record.KBO.service.BatterCrawlerServiceTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.annotation.Order;
 import org.springframework.test.context.ActiveProfiles;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -16,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BatterBasicCrawlerTest {
 
     @Autowired
-    private BatterCrawlerService batterCrawlerService;
+    private BatterCrawlerServiceTest batterCrawlerService;
 
     @Test
     public void crawlAndSaveBatter() throws Exception {

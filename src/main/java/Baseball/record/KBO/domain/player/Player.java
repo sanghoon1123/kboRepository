@@ -6,7 +6,6 @@ import Baseball.record.KBO.dto.PlayerDto;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 

@@ -1,7 +1,5 @@
 package Baseball.record.KBO.dto;
 
-import Baseball.record.KBO.domain.player.Batter;
-import Baseball.record.KBO.domain.player.Pitcher;
 import Baseball.record.KBO.domain.player.Player;
 import Baseball.record.KBO.domain.team.TeamName;
 import lombok.Getter;
@@ -9,7 +7,6 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-// PlayerDto2.java
 @Getter
 @Setter
 public class PlayerDto2 {

@@ -1,9 +1,6 @@
 package Baseball.record.KBO.dto;
 
-import Baseball.record.KBO.domain.team.Team;
-import Baseball.record.KBO.domain.team.TeamName;
 import Baseball.record.KBO.domain.team.TeamRecord;
-import lombok.Data;
 import lombok.Getter;
 
 import java.time.LocalDate;

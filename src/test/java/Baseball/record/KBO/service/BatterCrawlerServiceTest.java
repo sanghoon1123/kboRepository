@@ -1,11 +1,9 @@
-package Baseball.record.KBO.chrome;
+package Baseball.record.KBO.service;
 
 import Baseball.record.KBO.domain.player.BatterPosition;
 import Baseball.record.KBO.domain.team.TeamName;
 import Baseball.record.KBO.dto.BatterDto2;
 import Baseball.record.KBO.dto.PlayerDto2;
-import Baseball.record.KBO.service.PlayerService;
-import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -13,31 +11,29 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-@Component
-@RequiredArgsConstructor
-@Order(3)
-@Profile("!test")
-public class BatterBasicCrawler implements CommandLineRunner {
+@Service
+public class BatterCrawlerServiceTest {
 
-    private final PlayerService playerService;
+    @Autowired PlayerService playerService;
 
-    @Override
-    public void run(String... args) {
-        System.setProperty("webdriver.chrome.driver", "C:/Users/eun04/Downloads/chromedriver-win64/chromedriver-win64/chromedriver.exe");
+    @Value("${chrome.driver.path}")
+    private String chromeDriverPath;
 
+    public void crawlAndSaveBatterData() throws Exception {
+        System.out.println("=== 크롤링 테스트 시작 ===");
+        System.setProperty("webdriver.chrome.driver", "C:\\Users\\eun04\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe");
 
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new"); // 최신 버전 대응
+        options.addArguments("--headless=new");
         options.addArguments("--disable-gpu");
         options.addArguments("--window-size=1920,1080");
 
@@ -57,6 +53,7 @@ public class BatterBasicCrawler implements CommandLineRunner {
             driver.quit();
         }
     }
+
 
     private static void crawlBasicStats(WebDriver driver, Map<String, PlayerDto2> playerMap) throws InterruptedException {
         driver.get("https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx");
@@ -99,6 +96,11 @@ public class BatterBasicCrawler implements CommandLineRunner {
                     batterDto.setTeamName(teamName);
 
                     playerMap.put(key, batterDto);
+
+                    if (playerMap.size() >= 10) {
+                        System.out.println("🔟 최대 10명까지만 크롤링 - 기본 기록 수집 완료");
+                        return;
+                    }
 
                 } catch (Exception e) {
                     System.out.println("⚠️ 기본 기록 크롤링 오류: " + e.getMessage());
@@ -320,5 +322,6 @@ public class BatterBasicCrawler implements CommandLineRunner {
             "포수", BatterPosition.C
     );
 }
+
 
 

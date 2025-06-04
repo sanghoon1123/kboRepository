@@ -9,7 +9,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.core.annotation.Order;
 
 import javax.annotation.Nullable;
 import java.time.LocalDate;

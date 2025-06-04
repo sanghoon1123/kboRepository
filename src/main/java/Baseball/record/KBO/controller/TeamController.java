@@ -1,15 +1,10 @@
 package Baseball.record.KBO.controller;
 
-import Baseball.record.KBO.domain.team.Team;
-import Baseball.record.KBO.domain.team.TeamName;
-import Baseball.record.KBO.domain.team.TeamRecord;
-import Baseball.record.KBO.dto.TeamDto;
 import Baseball.record.KBO.dto.TeamRecordDto;
 import Baseball.record.KBO.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

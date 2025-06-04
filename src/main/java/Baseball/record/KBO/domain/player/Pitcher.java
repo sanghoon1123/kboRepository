@@ -4,9 +4,7 @@ import Baseball.record.KBO.domain.team.Team;
 import Baseball.record.KBO.dto.PitcherDto;
 import Baseball.record.KBO.dto.PlayerDto;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
 
 import javax.annotation.Nullable;
 import java.time.LocalDate;

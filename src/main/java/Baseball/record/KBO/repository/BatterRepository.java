@@ -3,8 +3,6 @@ package Baseball.record.KBO.repository;
 import Baseball.record.KBO.domain.player.Batter;
 import Baseball.record.KBO.domain.player.BatterPosition;
 import Baseball.record.KBO.domain.team.TeamName;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -5,7 +5,6 @@ import Baseball.record.KBO.domain.team.TeamName;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
-import java.util.List;
 
 @Getter
 public class TeamDto {

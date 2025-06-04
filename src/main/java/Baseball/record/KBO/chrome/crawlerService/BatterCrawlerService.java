@@ -1,9 +1,11 @@
-package Baseball.record.KBO.service;
+package Baseball.record.KBO.chrome.crawlerService;
 
 import Baseball.record.KBO.domain.player.BatterPosition;
 import Baseball.record.KBO.domain.team.TeamName;
 import Baseball.record.KBO.dto.BatterDto2;
 import Baseball.record.KBO.dto.PlayerDto2;
+import Baseball.record.KBO.service.PlayerService;
+import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -11,23 +13,27 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class BatterCrawlerService {
 
-    @Autowired PlayerService playerService;
+    private final PlayerService playerService;
 
+    @Value("${chrome.driver.path}")
+    private String chromeDriverPath;
 
-    public void crawlAndSaveBatterData() throws Exception {
-        System.out.println("=== 크롤링 테스트 시작 ===");
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\eun04\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe");
+    public void crawl() {
+        System.setProperty("webdriver.chrome.driver", chromeDriverPath);
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless=new");
@@ -35,7 +41,6 @@ public class BatterCrawlerService {
         options.addArguments("--window-size=1920,1080");
 
         WebDriver driver = new ChromeDriver(options);
-
         Map<String, PlayerDto2> playerMap = new HashMap<>();
 
         try {
@@ -43,7 +48,7 @@ public class BatterCrawlerService {
             crawlOpsStats(driver, playerMap);
             crawlPos(driver, playerMap);
             playerService.saveAllBatters(playerMap);
-            System.out.println("✅ 저장 완료");
+            System.out.println("✅ 타자 저장 완료");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -51,8 +56,7 @@ public class BatterCrawlerService {
         }
     }
 
-
-    private static void crawlBasicStats(WebDriver driver, Map<String, PlayerDto2> playerMap) throws InterruptedException {
+    private void crawlBasicStats(WebDriver driver, Map<String, PlayerDto2> playerMap) throws InterruptedException {
         driver.get("https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx");
         Thread.sleep(2000);
         int currentPage = 1;
@@ -94,11 +98,6 @@ public class BatterCrawlerService {
 
                     playerMap.put(key, batterDto);
 
-                    if (playerMap.size() >= 10) {
-                        System.out.println("🔟 최대 10명까지만 크롤링 - 기본 기록 수집 완료");
-                        return;
-                    }
-
                 } catch (Exception e) {
                     System.out.println("⚠️ 기본 기록 크롤링 오류: " + e.getMessage());
                 }
@@ -131,7 +130,7 @@ public class BatterCrawlerService {
 
 
 
-    private static LocalDate fetchBirthDate(String playerUrl) {
+    private LocalDate fetchBirthDate(String playerUrl) {
         WebDriver subDriver = new ChromeDriver();
         try {
             subDriver.get(playerUrl);
@@ -149,7 +148,7 @@ public class BatterCrawlerService {
         }
     }
 
-    private static void crawlOpsStats(WebDriver driver, Map<String, PlayerDto2> playerMap) throws InterruptedException {
+    private void crawlOpsStats(WebDriver driver, Map<String, PlayerDto2> playerMap) throws InterruptedException {
         driver.get("https://www.koreabaseball.com/Record/Player/HitterBasic/Basic2.aspx");
         Thread.sleep(2000);
         int currentPage = 1;
@@ -203,7 +202,7 @@ public class BatterCrawlerService {
 
 
 
-    private static void crawlPos(WebDriver driver, Map<String, PlayerDto2> playerMap) throws InterruptedException {
+    private void crawlPos(WebDriver driver, Map<String, PlayerDto2> playerMap) throws InterruptedException {
         driver.get("https://www.koreabaseball.com/Record/Player/Defense/Basic.aspx");
         Thread.sleep(2000);
 
@@ -230,7 +229,7 @@ public class BatterCrawlerService {
         }
     }
 
-    private static void clickPage(WebDriver driver, String pageNum) {
+    private void clickPage(WebDriver driver, String pageNum) {
         List<WebElement> refreshedLinks = driver.findElements(By.cssSelector("div.paging a"));
         for (WebElement link : refreshedLinks) {
             if (link.getText().trim().equals(pageNum)) {
@@ -240,7 +239,7 @@ public class BatterCrawlerService {
         }
     }
 
-    private static boolean clickNextPage(WebDriver driver) throws InterruptedException {
+    private boolean clickNextPage(WebDriver driver) throws InterruptedException {
         List<WebElement> nextButtons = driver.findElements(By.cssSelector("a > img[alt='다음']"));
         if (nextButtons.isEmpty()) return false;
 
@@ -254,7 +253,7 @@ public class BatterCrawlerService {
         }
     }
 
-    private static void parseDefensePage(WebDriver driver, Map<String, PlayerDto2> playerMap) {
+    private void parseDefensePage(WebDriver driver, Map<String, PlayerDto2> playerMap) {
         List<WebElement> rows = driver.findElement(By.tagName("tbody")).findElements(By.tagName("tr"));
 
         for (WebElement row : rows) {
@@ -304,11 +303,11 @@ public class BatterCrawlerService {
     }
 
 
-    private static String makeKey(String name, LocalDate birthDate) {
+    private String makeKey(String name, LocalDate birthDate) {
         return name + "_" + birthDate;
     }
 
-    private static final Map<String, BatterPosition> batterPositionMap = Map.of(
+    private final Map<String, BatterPosition> batterPositionMap = Map.of(
             "우익수", BatterPosition.RIGHT,
             "중견수", BatterPosition.CENTER,
             "좌익수", BatterPosition.LEFT,
@@ -319,6 +318,3 @@ public class BatterCrawlerService {
             "포수", BatterPosition.C
     );
 }
-
-
-

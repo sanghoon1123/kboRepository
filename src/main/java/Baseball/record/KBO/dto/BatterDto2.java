@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-// BatterDto2.java
 @Getter
 @Setter
 @ToString(callSuper = true)
