@@ -1,6 +1,5 @@
     package Baseball.record.KBO.controller;
 
-    import Baseball.record.KBO.domain.player.PitcherPosition;
     import Baseball.record.KBO.domain.player.Player;
     import Baseball.record.KBO.domain.team.Team;
     import Baseball.record.KBO.domain.team.TeamName;

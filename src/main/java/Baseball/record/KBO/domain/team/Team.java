@@ -1,7 +1,6 @@
 package Baseball.record.KBO.domain.team;
 
 import Baseball.record.KBO.domain.player.Player;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;

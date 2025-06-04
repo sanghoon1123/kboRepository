@@ -113,3 +113,15 @@ resources
         "winningRate": 0.585,
         "gamesBehind": 3.5
     },...
+
+# application-dev.properties 예시
+
+이 파일은 로컬 개발 환경에서만 사용되며, Git에는 올라가지 않습니다.
+
+src/main/resources/application-dev.properties:
+-------------------------------------------------
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+server.port=8080

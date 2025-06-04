@@ -10,9 +10,14 @@ import lombok.Getter;
 import java.time.LocalDate;
 
 @Getter
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "playerType")
+@JsonTypeInfo(
+        use     = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "playerType",
+        visible = true
+)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = BatterDto.class, name = "BATTER"),
+        @JsonSubTypes.Type(value = BatterDto.class,  name = "BATTER"),
         @JsonSubTypes.Type(value = PitcherDto.class, name = "PITCHER")
 })
 public abstract class PlayerDto {

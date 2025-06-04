@@ -11,10 +11,7 @@ import Baseball.record.KBO.dto.PitcherDto;
 import Baseball.record.KBO.dto.PlayerDto;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static Baseball.record.KBO.domain.player.QPlayer.*;
 
 @Repository
 @RequiredArgsConstructor

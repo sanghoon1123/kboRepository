@@ -2,8 +2,6 @@ package Baseball.record.KBO.repository;
 
 import Baseball.record.KBO.domain.team.Team;
 import Baseball.record.KBO.domain.team.TeamName;
-import Baseball.record.KBO.dto.BatterDto;
-import Baseball.record.KBO.dto.PitcherDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

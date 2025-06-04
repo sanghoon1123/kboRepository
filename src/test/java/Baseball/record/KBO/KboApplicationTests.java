@@ -1,8 +1,8 @@
 package Baseball.record.KBO;
 
-import Baseball.record.KBO.service.BatterCrawlerService;
-import Baseball.record.KBO.service.PitcherCrawlerService;
-import Baseball.record.KBO.service.TeamCrawlerService;
+import Baseball.record.KBO.chrome.crawlerService.BatterCrawlerService;
+import Baseball.record.KBO.chrome.crawlerService.PitcherCrawlerService;
+import Baseball.record.KBO.chrome.crawlerService.TeamCrawlerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,9 +18,9 @@ class KboApplicationTests {
 
 	@Test
 	void runTeamCrawlerService() throws Exception {
-		teamCrawlerService.crawlAndSaveTeamData();
-		pitcherCrawlerService.crawlAndSavePitcher();
-		batterCrawlerService.crawlAndSaveBatterData();
+		teamCrawlerService.crawlTeamRecords();
+		pitcherCrawlerService.crawl();
+		batterCrawlerService.crawl();
 	}
 
 }

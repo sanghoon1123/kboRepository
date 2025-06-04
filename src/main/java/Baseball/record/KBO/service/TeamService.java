@@ -70,6 +70,7 @@ public class TeamService {
     }
 
     public void saveTeamRecords(List<TeamRecord> records) {
+        teamRecordRepository.deleteAll();
         teamRecordRepository.saveAll(records);
     }
 

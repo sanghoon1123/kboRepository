@@ -1,10 +1,8 @@
-package Baseball.record.KBO.chrome;
+package Baseball.record.KBO.chrome.crawlerService;
 
 import Baseball.record.KBO.domain.team.Team;
 import Baseball.record.KBO.domain.team.TeamName;
 import Baseball.record.KBO.domain.team.TeamRecord;
-import Baseball.record.KBO.repository.TeamRecordRepository;
-import Baseball.record.KBO.repository.TeamRepository;
 import Baseball.record.KBO.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.By;
@@ -12,30 +10,28 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
-import javax.swing.text.Document;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@Service
 @RequiredArgsConstructor
-@Order(1)
-@Profile("!test")
-public class TeamCrawler implements CommandLineRunner {
+public class TeamCrawlerService {
 
     private final TeamService teamService;
 
-    @Override
-    public void run(String... args) {
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\eun04\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe");
+    @Value("${chrome.driver.path}")
+    private String chromeDriverPath;
+
+    public void crawlTeamRecords() {
+        System.setProperty("webdriver.chrome.driver", chromeDriverPath);
+        System.out.println("크롬 드라이버 경로 확인: " + chromeDriverPath);
 
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new"); // 최신 버전 대응
+        options.addArguments("--headless=new"); // 최신 headless 모드
         options.addArguments("--disable-gpu");
         options.addArguments("--window-size=1920,1080");
 
@@ -87,9 +83,11 @@ public class TeamCrawler implements CommandLineRunner {
             System.out.println("✅ 팀 기록 저장 완료");
 
         } catch (Exception e) {
+            System.out.println("❌ 팀 기록 크롤링 실패: " + e.getMessage());
             e.printStackTrace();
         } finally {
             driver.quit();
         }
     }
 }
+

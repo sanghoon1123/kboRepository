@@ -3,32 +3,26 @@ package Baseball.record.KBO.service;
 import Baseball.record.KBO.domain.team.Team;
 import Baseball.record.KBO.domain.team.TeamName;
 import Baseball.record.KBO.domain.team.TeamRecord;
-import Baseball.record.KBO.dto.PitcherDto2;
-import Baseball.record.KBO.repository.TeamRepository;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
-public class TeamCrawlerService {
+public class TeamCrawlerServiceTest {
 
     @Autowired TeamService teamService;
+
+    @Value("${chrome.driver.path}")
+    private String chromeDriverPath;
 
     public void crawlAndSaveTeamData() throws Exception {
         System.out.println("=== 크롤링 테스트 시작 ===");
