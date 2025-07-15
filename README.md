@@ -51,7 +51,19 @@
 
 ## 🖥️ 실행 방법
 
-1. MySQL 및 application-dev.properties 설정
+### 1. MySQL 및 application-dev.properties 설정
+
+> 이 파일은 **로컬 개발 환경에서만 사용되며**, Git에는 포함되지 않습니다.
+
+예시: `src/main/resources/application-dev.properties`
+
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/baseball
+spring.datasource.username=your_username
+spring.datasource.password=your_password
+chrome.driver.path=C:/path/to/chromedriver.exe
+server.port=8080
+
 2. 프로젝트 빌드 ```bash ./gradlew build
 3. 실행 java -jar build/libs/kbo-api.jar
 
@@ -118,15 +130,3 @@ resources
         "winningRate": 0.585,
         "gamesBehind": 3.5
     },...
-
-# application-dev.properties 예시
-
-이 파일은 로컬 개발 환경에서만 사용되며, Git에는 올라가지 않습니다.
-
-src/main/resources/application-dev.properties:
--------------------------------------------------
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-server.port=8080
